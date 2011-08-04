@@ -1,7 +1,7 @@
 Mojolicious::Plugin::Parallol
 =============================
 
-Because parallel request should be as fun as parallololololol!
+Because parallel requests should be as fun as parallololololol!
 
 ## Synopsis
 
