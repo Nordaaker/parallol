@@ -1,6 +1,7 @@
 package Mojolicious::Plugin::Parallol;
 
 use Mojo::Base 'Mojolicious::Plugin';
+use Scalar::Util 'weaken';
 
 sub register {
   my ($plugin, $app) = @_;
@@ -16,6 +17,7 @@ sub register {
   $app->helper(
     parallol => sub {
       my ($self, $callback) = @_;
+      weaken($self);
 
       $self->render_later;
       $self->{paralloling}++;
