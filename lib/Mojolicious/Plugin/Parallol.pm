@@ -8,7 +8,7 @@ sub register {
   $app->hook(before_dispatch => sub {
     my $self = shift;
     $self->{paralloling} = 0;
-    $self->attr('parallol_done' => sub {
+    $self->attr(on_parallol => sub {
       sub { $self->render }
     });
   });
@@ -22,7 +22,7 @@ sub register {
 
       sub {
         &$callback(@_);
-        &{$self->parallol_done}($self) if --$self->{paralloling} == 0;
+        &{$self->on_parallol}($self) if --$self->{paralloling} == 0;
       }
     }
   );

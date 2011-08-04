@@ -41,7 +41,7 @@ get '/' => sub {
   $db->select('foo', $self->parallol(sub { $foo = pop }));
   $db->select('bar', $self->parallol(sub { $bar = pop }));
 
-  $self->parallol_done(sub {
+  $self->on_parallol(sub {
     $self->render(json => { foo => $foo, bar => $bar });
   });
 };
