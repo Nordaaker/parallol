@@ -30,5 +30,5 @@ sub register {
   );
 }
 
-1;
+"Parallolololololololololol";
 
