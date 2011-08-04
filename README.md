@@ -17,11 +17,11 @@ get '/' => sub {
   my $self = shift;
   
   $ua->get('http://bbc.co.uk/', $self->parallol(sub {
-    $self->stash('bbc', pop->res->dom);
+    $self->stash(bbc => pop->res->dom);
   }));
   
-  $ua->get('http://twitter.com/, $self->parallol(sub {
-    $self->stash('twitter, pop->res->dom);
+  $ua->get('http://twitter.com/', $self->parallol(sub {
+    $self->stash(twitter => pop->res->dom);
   }));
 };
 ```
