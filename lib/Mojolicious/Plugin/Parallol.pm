@@ -21,8 +21,8 @@ sub register {
       $self->{paralloling}++;
 
       sub {
-        &$callback(@_);
-        &{$self->on_parallol}($self) if --$self->{paralloling} == 0;
+        $callback->(@_);
+        $self->on_parallol->($self) if --$self->{paralloling} == 0;
       }
     }
   );
