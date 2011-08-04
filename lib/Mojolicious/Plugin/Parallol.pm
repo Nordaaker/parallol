@@ -9,7 +9,7 @@ sub register {
     my $self = shift;
     $self->{paralloling} = 0;
     $self->attr(on_parallol => sub {
-      sub { $self->render }
+      sub { shift->render }
     });
   });
   
