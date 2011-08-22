@@ -10,7 +10,10 @@ sub register {
     my $self = shift;
     $self->{paralloling} = 0;
     $self->attr(on_parallol => sub {
-      sub { shift->render }
+      sub {
+        my $self = shift;
+        $self->render unless $self->stash('mojo.finished');
+      }
     });
   });
   
