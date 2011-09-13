@@ -26,7 +26,7 @@ sub register {
       $self->{paralloling}++;
 
       sub {
-        $callback->(@_);
+        eval { $callback->(@_); 1 } or $self->render_exception($@);
         $self->on_parallol->($self) if --$self->{paralloling} == 0;
       }
     }
