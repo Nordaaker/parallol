@@ -19,8 +19,17 @@ sub register {
   
   $app->helper(
     parallol => sub {
-      my ($self, $callback) = @_;
-      weaken($self);
+      my $callback = pop;
+      my ($self, %opts) = @_;
+
+      $opts{weaken} //= 1;
+
+      if (ref $callback && ref $callback eq 'CODE') {
+        weaken($self) if $opts{weaken};
+      } else {
+        my $name = $callback;
+        $callback = sub { $self->stash($name => pop) }
+      }
 
       $self->render_later;
       $self->{paralloling}++;
