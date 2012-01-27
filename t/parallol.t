@@ -40,9 +40,7 @@ get '/nested' => sub {
 
   one $self->parallol(sub {
     $self->stash(a => pop);
-    one $self->parallol(sub {
-      $self->stash(b => pop);
-    });
+    one $self->parallol('b');
   });
 };
 
