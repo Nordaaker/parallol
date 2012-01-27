@@ -22,10 +22,8 @@ sub register {
       my $callback = pop;
       my ($self, %opts) = @_;
 
-      $opts{weaken} //= 1;
-
       if (ref $callback && ref $callback eq 'CODE') {
-        weaken($self) if $opts{weaken};
+        weaken($self) if $opts{weaken} // 1;
       } else {
         my $name = $callback;
         $callback = sub { $self->stash($name => pop) }
