@@ -84,7 +84,7 @@ parallel requests and render the view when they're done.
   };
 
 By wrapping a callback in C<< $self->parallol >> you mark the current
-response as asynchronous (see L<Mojolicious::Controller/"render_later")
+response as asynchronous (see L<Mojolicious::Controller/"render_later">)
 and Parallol will render the view when all callbacks are called.
 
 =head3 Automatic stashing
