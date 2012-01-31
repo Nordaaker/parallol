@@ -25,11 +25,8 @@ Parallol - Because parallel requests should be as fun as parallololololol!
 
 =head1 SYNOPSIS
 
-  # Mojolicious
-  $self->plugin('Parallol');
-
-  # Mojolicious::Lite
-  plugin 'Parallol';
+  my $p = Parallol->new;
+  $p->do(sub {});
 
 =head1 DESCRIPTION
 
