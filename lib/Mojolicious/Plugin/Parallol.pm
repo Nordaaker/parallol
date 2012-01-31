@@ -166,5 +166,12 @@ Register helpers in L<Mojolicious> application.
 
 L<Mojolicious>, L<Parallol>
 
-=cut
+=head2 AUTHOR
 
+Magnus Holm L<mailto:magnus@nordaaker.com>
+
+=head2 LICENSE
+
+This software is licensed under the same terms as Perl itself.
+
+=cut
