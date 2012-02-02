@@ -163,6 +163,13 @@ the "done" callback:
     });
   };
 
+=head3 PSGI support
+
+If the Mojo IO loop is not running, Parallol will automatically start it
+for your request, and stop it again when all callbacks have been called.
+This means that asynchronous requests just works when you use Parallol
+in servers that don't use Mojo's IO loop (PSGI).
+
 =head3 $self weakening
 
 In order to prevent memory leaks, Parallol will automatically C<weaken
