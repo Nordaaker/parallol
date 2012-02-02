@@ -2,7 +2,7 @@ package Parallol;
 
 use Mojo::Base -base;
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 has on_done => sub { sub { } };
 
