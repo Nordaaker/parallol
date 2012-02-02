@@ -40,7 +40,7 @@ sub register {
     # If the IO loop is not running and there are pending requests ...
     return if Mojo::IOLoop->is_running || !$self->{paralloling};
 
-    # ... we want to run the IO loop and stop it again when 
+    # ... we want to run the IO loop and stop it again when it's done.
     my $cb = $self->on_parallol;
     $self->on_parallol(sub {
       $cb->(@_) if $cb;
