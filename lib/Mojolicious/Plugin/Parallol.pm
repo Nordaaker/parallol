@@ -6,8 +6,9 @@ use Scalar::Util 'weaken';
 sub register {
   my ($plugin, $app) = @_;
 
-  $app->hook(before_dispatch => sub {
-    my $self = shift;
+  $app->hook(around_dispatch => sub {
+    my ($next, $self) = @_;
+
     $self->{paralloling} = 0;
     $self->attr(on_parallol => sub {
       sub {
@@ -15,6 +16,20 @@ sub register {
         $self->render unless $self->stash('mojo.finished');
       }
     });
+
+    $next->();
+
+    # If the IO loop is not running and this actually is a Parallol request.
+    return if Mojo::IOLoop->is_running || !$self->{paralloling};
+
+    # Handle starting and stopping of the IO loop.
+    my $cb = $self->on_parallol;
+    $self->on_parallol(sub {
+      $cb->(@_) if $cb;
+      Mojo::IOLoop->stop;
+    });
+    
+    Mojo::IOLoop->start;
   });
   
   $app->helper(
