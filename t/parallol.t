@@ -71,6 +71,7 @@ sub t {
     is $status, 200;
     my $full = "";
     Plack::Util::foreach($body, sub { $full .= shift });
+    like $full, $content;
   }
 }
 
