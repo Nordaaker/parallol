@@ -35,10 +35,10 @@ sub register {
 
     # The action is now done. As mentioned above, we must call
     # on_parallol if there's nothing left to do.
-    $self->on_parallol->($self) if --$self->{paralloling} == 0;
+    return $self->on_parallol->($self) if --$self->{paralloling} == 0;
 
-    # If the IO loop is not running and there are pending requests ...
-    return if Mojo::IOLoop->is_running || !$self->{paralloling};
+    # If the IO loop is not running  ...
+    return if Mojo::IOLoop->is_running;
 
     # ... we want to run the IO loop and stop it again when it's done.
     my $cb = $self->on_parallol;
