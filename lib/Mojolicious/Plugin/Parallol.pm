@@ -141,7 +141,7 @@ use a helper, we can simplify our controller quite a lot.
     $self->title('http://mojolicio.us/', $self->parallol('mojo'));
   };
 
-  helpers title => sub {
+  helper title => sub {
     my ($self, $url, $cb) = @_;
     $self->ua->get($url, sub {
       $cb->(pop->res->dom->at('title')->text);
