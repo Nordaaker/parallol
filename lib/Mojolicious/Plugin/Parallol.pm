@@ -9,8 +9,18 @@ sub register {
   $app->hook(around_dispatch => sub {
     my ($next, $self) = @_;
 
-    # Start at 1 to emulate that the whole action is one big Parallol.
+    # This number represents the number of pending calls (that is, calls
+    # that have been done, but the callback hasn't been called yet).
+    # Every time this number gets decremented to zero, you must also
+    # call $self->on_parallol->($self) to signal that everything is
+    # done.
+    # 
+    # This number starts at 1 because we consider the action itself a
+    # pending call.
     $self->{paralloling} = 1;
+
+    # The final callback that gets called when all callbacks have been
+    # called.
     $self->attr(on_parallol => sub {
       sub {
         my $self = shift;
@@ -19,15 +29,18 @@ sub register {
     });
 
     $next->();
+
+    # If the action didn't call $self->parallol, don't do anything more.
     return unless $self->{paralloled};
 
-    # Pop the current action-parallol.
+    # The action is now done. As mentioned above, we must call
+    # on_parallol if there's nothing left to do.
     $self->on_parallol->($self) if --$self->{paralloling} == 0;
 
-    # If the IO loop is not running and there are pending requests.
+    # If the IO loop is not running and there are pending requests ...
     return if Mojo::IOLoop->is_running || !$self->{paralloling};
 
-    # Handle starting and stopping of the IO loop.
+    # ... we want to run the IO loop and stop it again when 
     my $cb = $self->on_parallol;
     $self->on_parallol(sub {
       $cb->(@_) if $cb;
@@ -49,12 +62,19 @@ sub register {
         $callback = sub { $self->stash($name => pop) }
       }
 
+      # Mark the request as async and paralloled.
       $self->render_later;
-      $self->{paralloling}++;
       $self->{paralloled} = 1;
 
+      # Increment pending calls.
+      $self->{paralloling}++;
+
+
       sub {
+        # Run the callback (and handling errors).
         eval { $callback->(@_); 1 } or $self->render_exception($@);
+
+        # Run on_parallol if it's finished.
         $self->on_parallol->($self) if --$self->{paralloling} == 0;
       }
     }
