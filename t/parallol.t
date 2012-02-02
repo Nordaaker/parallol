@@ -6,10 +6,10 @@ use lib "$FindBin::Bin/lib";
 
 plugin 'Parallol';
 
-# Sleep for 0.5 seconds, then return 1 in the callback
+# Sleep for 0.1 seconds, then return 1 in the callback
 sub one {
   my $c = pop;
-  Mojo::IOLoop->timer(0.5, sub { $c->(1) });
+  Mojo::IOLoop->timer(0.1, sub { $c->(1) });
 }
 
 helper one => sub { one(@_); };
