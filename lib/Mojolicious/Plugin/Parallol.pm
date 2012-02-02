@@ -9,7 +9,8 @@ sub register {
   $app->hook(around_dispatch => sub {
     my ($next, $self) = @_;
 
-    $self->{paralloling} = 0;
+    # Start at 1 to emulate that the whole action is one big Parallol.
+    $self->{paralloling} = 1;
     $self->attr(on_parallol => sub {
       sub {
         my $self = shift;
@@ -18,8 +19,12 @@ sub register {
     });
 
     $next->();
+    return unless $self->{paralloled};
 
-    # If the IO loop is not running and this actually is a Parallol request.
+    # Pop the current action-parallol.
+    $self->on_parallol->($self) if --$self->{paralloling} == 0;
+
+    # If the IO loop is not running and there are pending requests.
     return if Mojo::IOLoop->is_running || !$self->{paralloling};
 
     # Handle starting and stopping of the IO loop.
@@ -46,6 +51,7 @@ sub register {
 
       $self->render_later;
       $self->{paralloling}++;
+      $self->{paralloled} = 1;
 
       sub {
         eval { $callback->(@_); 1 } or $self->render_exception($@);
