@@ -67,11 +67,11 @@ $r->route('/app/instant')->to('ParallolController#do_instant');
 my $t = Test::Mojo->new;
 my $p;
 
-eval {
+eval '
   use Mojo::Server::PSGI;
   use Plack::Util;
   $p = Mojo::Server::PSGI->new;
-};
+';
 
 sub t {
   my ($path, $content) = @_;
