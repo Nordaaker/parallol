@@ -1,6 +1,7 @@
 use Test::More;
 use Test::Mojo;
 use Mojolicious::Lite;
+use Mojo::Server::PSGI;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 
@@ -65,25 +66,37 @@ $r->route('/app/nested')->to('ParallolController#do_nested');
 $r->route('/app/instant')->to('ParallolController#do_instant');
 
 my $t = Test::Mojo->new;
-my $p;
+my $p = Mojo::Server::PSGI->new;
 
-eval '
-  use Mojo::Server::PSGI;
-  use Plack::Util;
-  $p = Mojo::Server::PSGI->new;
-';
+sub plack_body {
+  my $body = shift;
+  my $res = "";
+ 
+  if (ref $body eq 'ARRAY') {
+    for my $line (@$body) {
+      $res .= $line if length $line;
+    }
+  } else {
+    local $/ = \65536 unless ref $/;
+    while (defined(my $line = $body->getline)) {
+      $res .= $line if length $line;
+    }
+    $body->close;
+  }
+
+  $res;
+}
 
 sub t {
-  my ($path, $content) = @_;
-  $t->get_ok($path)->status_is(200)->content_like($content);
+  my ($path, $content, $status) = @_;
+  $status //= 200;
+  $t->get_ok($path)->status_is($status)->content_like($content);
 
-  if ($p) {
+  {
     my ($status, $header, $body) = @{$p->run({PATH_INFO => $path})};
-    is $status, 200;
-    my $full = "";
-    Plack::Util::foreach($body, sub { $full .= shift });
-    like $full, $content;
-  }
+    is $status, $status;
+    like plack_body($body), $content;
+  };
 }
 
 # Lite
