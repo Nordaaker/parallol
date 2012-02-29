@@ -53,8 +53,11 @@ sub register {
     # ... we want to run the IO loop and stop it again when it's done.
     my $cb = $self->on_parallol;
     $self->on_parallol(sub {
-      $cb->(@_);
+      # Run the callback; capture any errors.
+      eval { $cb->(@_); 1 } or my $e = $@;
       Mojo::IOLoop->stop;
+      # Re-throw the error.
+      die $e if $e;
     });
     
     Mojo::IOLoop->start;
@@ -82,11 +85,13 @@ sub register {
 
 
       sub {
-        # Run the callback (and handling errors).
+        # Run the callback.
         eval { $callback->(@_); 1 } or $self->render_exception($@);
 
         # Run on_parallol if it's finished.
-        $self->on_parallol->($self) if --$p->{paralloling} == 0;
+        if (--$p->{paralloling} == 0) {
+          eval { $self->on_parallol->($self); 1 } or $self->render_exception($@);
+        }
       }
     }
   );

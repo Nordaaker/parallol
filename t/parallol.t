@@ -58,12 +58,29 @@ get '/instant' => sub {
   $self->parallol('b')->(1);
 };
 
+get '/error' => sub {
+  my $self = shift;
+  $self->one($self->parallol(weaken => 0, sub {
+    die "oh no";
+  }));
+};
+
+get '/error_done' => sub {
+  my $self = shift;
+  $self->on_parallol(sub {
+    die "oh no";
+  });
+  $self->one($self->parallol('one'));
+};
+
 my $r = app->routes;
 
 $r->route('/app')->to('ParallolController#do_index');
 $r->route('/app/stash')->to('ParallolController#do_stash');
 $r->route('/app/nested')->to('ParallolController#do_nested');
 $r->route('/app/instant')->to('ParallolController#do_instant');
+$r->route('/app/error')->to('ParallolController#do_error');
+$r->route('/app/error_done')->to('ParallolController#do_error_done');
 
 my $t = Test::Mojo->new;
 my $p = Mojo::Server::PSGI->new;
@@ -104,12 +121,16 @@ t '/', qr/2/;
 t '/stash', qr/11/;
 t '/nested', qr/11/;
 t '/instant', qr/11/;
+t '/error', qr/Server error/, 500;
+t '/error_done', qr/Server error/, 500;
 
 # Controller
 t '/app', qr/2/;
 t '/app/stash', qr/11/;
 t '/app/nested', qr/11/;
 t '/app/instant', qr/11/;
+t '/app/error', qr/Server error/, 500;
+t '/app/error_done', qr/Server error/, 500;
 
 done_testing;
 

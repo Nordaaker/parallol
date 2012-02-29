@@ -46,5 +46,21 @@ sub do_instant {
   $self->parallol('b')->(1);
 }
 
+sub do_error {
+  my $self = shift;
+  $self->one($self->parallol(weaken => 0, sub {
+    die "oh no";
+  }));
+}
+
+sub do_error_done {
+  my $self = shift;
+  $self->on_parallol(sub {
+    die "oh no";
+  });
+  $self->one($self->parallol('one'));
+}
+
+
 1;
 
