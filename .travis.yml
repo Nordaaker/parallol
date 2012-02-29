@@ -4,5 +4,5 @@ perl:
   - "5.12"
   - "5.10"
 
-after_install: "cpanm --quiet Plack::Util"
+before_install: "cpanm --quiet Plack::Util"
 
