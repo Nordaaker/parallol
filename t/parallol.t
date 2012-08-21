@@ -83,7 +83,7 @@ $r->route('/app/error')->to('ParallolController#do_error');
 $r->route('/app/error_done')->to('ParallolController#do_error_done');
 
 my $t = Test::Mojo->new;
-my $p = Mojo::Server::PSGI->new;
+my $p = Mojo::Server::PSGI->new(app => app);
 
 sub plack_body {
   my $body = shift;
